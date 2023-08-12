@@ -1,12 +1,19 @@
 @import './fonts.css';
 @import './tailwind.css';
 
+
 .container-main {
     width: 100%;
     max-width: 1100px;
-    padding-left: 30px;
-    padding-right: 30px;
+    padding-left: 15px;
+    padding-right: 15px;
     margin: 0 auto;
+}
+@media screen and (min-width: theme('screens.sm')) {
+    .container-main {
+        padding-left: 30px;
+        padding-right: 30px;
+    }
 }
 .css-1u9des2-indicatorSeparator {
     display: none;
