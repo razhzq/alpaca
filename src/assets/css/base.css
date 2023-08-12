@@ -1,0 +1,13 @@
+@import './fonts.css';
+@import './tailwind.css';
+
+.container-main {
+    width: 100%;
+    max-width: 1100px;
+    padding-left: 30px;
+    padding-right: 30px;
+    margin: 0 auto;
+}
+.css-1u9des2-indicatorSeparator {
+    display: none;
+}

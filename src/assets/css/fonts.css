@@ -1,0 +1,16 @@
+@font-face {
+    font-family: 'sourceSansPro-regular';
+    src: url('../fonts/sourceSansPro/SourceSans3-Regular.ttf');
+}
+@font-face {
+    font-family: 'sourceSansPro-medium';
+    src: url('../fonts/sourceSansPro/SourceSans3-Medium.ttf');
+}
+@font-face {
+    font-family: 'sourceSansPro-semibold';
+    src: url('../fonts/sourceSansPro/SourceSans3-SemiBold.ttf');
+}
+@font-face {
+    font-family: 'sourceSansPro-bold';
+    src: url('../fonts/sourceSansPro/SourceSans3-Bold.ttf');
+}
