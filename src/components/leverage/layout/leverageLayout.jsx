@@ -16,26 +16,30 @@ const select2 = [
   { value: "short", label: "Short" },
 ];
 
+const handleChange = ()=> {
+
+}
+
 function LeverageLayout({ title }) {
   return (
     <div className="container-main w-full flex flex-col gap-8 py-10">
       <div className="w-full">
-        <p className="text-black text-2xl font-mainRegular">{title}</p>
+        <p className="text-black text-lg md:text-2xl font-mainRegular md:text-start text-center">{title}</p>
       </div>
-      <div className="w-full grid grid-cols-2 gap-8">
+      <div className="w-full grid md:grid-cols-2 gap-8">
         <LeverageBox title="Asset Pair">
           <CustomSelect options={select1} />
           <div className="flex flex-col  gap-5 h-full">
             <p className="text-md text-black font-mainRegular"></p>
-            <div className="w-full grid grid-cols-[120px,auto] gap-6 items-center">
-              <p className="text-[68px] text-blue font-mainBold">100</p>
+            <div className="w-full grid grid-cols-1 sm:grid-cols-[120px,auto] gap-6 items-center">
+              <input type="text" defaultValue="100" onChange={handleChange} placeholder="0" className="bg-transparent outline-none text-[46px] md:text-[68px] text-blue font-mainBold"/>
               <CustomSelect options={select2} />
             </div>
             <div className="w-full flex flex-col gap-2">
-              <button className="w-full py-1 bg-blue rounded-[6px] text-md text-white font-mainSemibold">
+              <button className="w-full py-1 bg-blue rounded-[6px] text-sm sm:text-base md:text-md text-white font-mainSemibold">
                 Calculate
               </button>
-              <button className="w-full py-1 bg-blueDark rounded-[6px] text-md text-white font-mainSemibold">
+              <button className="w-full py-1 bg-blueDark rounded-[6px] text-sm sm:text-base md:text-md text-white font-mainSemibold">
                 Connect Wallet
               </button>
             </div>
@@ -48,64 +52,64 @@ function LeverageLayout({ title }) {
           <div className="w-full flex flex-col gap-[16px]">
             <div className="group hover:bg-blueDark bg-white w-full flex items-center justify-between px-4 py-1 rounded-[6px] transition-all">
               <div className="flex flex-col gap-1">
-                <p className="group-hover:text-white transition-all text-black text-base font-mainRegular">
+                <p className="group-hover:text-white transition-all text-black text-sm sm:text-base font-mainRegular">
                   1.9971DA
                 </p>
-                <p className="group-hover:text-white transition-all text-black text-base font-mainRegular">
+                <p className="group-hover:text-white transition-all text-black text-sm sm:text-base font-mainRegular">
                   ≥ $-0.7 after fees
                 </p>
               </div>
               <div className="flex flex-col items-end gap-1">
-                <p className="text-success text-base font-mainRegular">Best</p>
-                <p className="group-hover:text-white transition-all text-black text-base font-mainRegular">
+                <p className="text-success text-sm sm:text-base font-mainRegular">Best</p>
+                <p className="text-end group-hover:text-white transition-all text-black text-sm sm:text-base font-mainRegular">
                   $5.0728via KyberSwap
                 </p>
               </div>
             </div>
             <div className="group hover:bg-blueDark bg-white w-full flex items-center justify-between px-4 py-1 rounded-[6px] transition-all">
               <div className="flex flex-col gap-1">
-                <p className="group-hover:text-white transition-all text-black text-base font-mainRegular">
+                <p className="group-hover:text-white transition-all text-black text-sm sm:text-base font-mainRegular">
                   1.9971DA
                 </p>
-                <p className="group-hover:text-white transition-all text-black text-base font-mainRegular">
+                <p className="group-hover:text-white transition-all text-black text-sm sm:text-base font-mainRegular">
                   ≥ $-0.7 after fees
                 </p>
               </div>
               <div className="flex flex-col items-end gap-1">
-                <p className="text-error text-base font-mainRegular">-123%</p>
-                <p className="group-hover:text-white transition-all text-black text-base font-mainRegular">
+                <p className="text-error text-sm sm:text-base font-mainRegular">-123%</p>
+                <p className="text-end group-hover:text-white transition-all text-black text-sm sm:text-base font-mainRegular">
                   $5.0728via KyberSwap
                 </p>
               </div>
             </div>
             <div className="group hover:bg-blueDark bg-white w-full flex items-center justify-between px-4 py-1 rounded-[6px] transition-all">
               <div className="flex flex-col gap-1">
-                <p className="group-hover:text-white transition-all text-black text-base font-mainRegular">
+                <p className="group-hover:text-white transition-all text-black text-sm sm:text-base font-mainRegular">
                   1.9971DA
                 </p>
-                <p className="group-hover:text-white transition-all text-black text-base font-mainRegular">
+                <p className="group-hover:text-white transition-all text-black text-sm sm:text-base font-mainRegular">
                   ≥ $-0.7 after fees
                 </p>
               </div>
               <div className="flex flex-col items-end gap-1">
-                <p className="text-success text-base font-mainRegular">Best</p>
-                <p className="group-hover:text-white transition-all text-black text-base font-mainRegular">
+                <p className="text-success text-sm sm:text-base font-mainRegular">Best</p>
+                <p className="text-end group-hover:text-white transition-all text-black text-sm sm:text-base font-mainRegular">
                   $5.0728via KyberSwap
                 </p>
               </div>
             </div>
             <div className="group hover:bg-blueDark bg-white w-full flex items-center justify-between px-4 py-1 rounded-[6px] transition-all">
               <div className="flex flex-col gap-1">
-                <p className="group-hover:text-white transition-all text-black text-base font-mainRegular">
+                <p className="group-hover:text-white transition-all text-black text-sm sm:text-base font-mainRegular">
                   1.9971DA
                 </p>
-                <p className="group-hover:text-white transition-all text-black text-base font-mainRegular">
+                <p className="group-hover:text-white transition-all text-black text-sm sm:text-base font-mainRegular">
                   ≥ $-0.7 after fees
                 </p>
               </div>
               <div className="flex flex-col items-end gap-1">
-                <p className="text-error text-base font-mainRegular">-123%</p>
-                <p className="group-hover:text-white transition-all text-black text-base font-mainRegular">
+                <p className="text-error text-sm sm:text-base font-mainRegular">-123%</p>
+                <p className="text-end group-hover:text-white transition-all text-black text-sm sm:text-base font-mainRegular">
                   $5.0728via KyberSwap
                 </p>
               </div>
