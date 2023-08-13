@@ -54,7 +54,8 @@ const LeverageLayout = ({ title }) => {
             <div className='p-2'>
               <div className='flex justify-between items-center'>
                 <p className='text-[18px] font-bold'>Leverage <span className='text-[18px] font-normal'>(2x~150x)</span></p>
-                  <input className='w-[100px] text-center py-2 text-[18px] font-bold rounded-[4px]' min={2} max={150} type="number" value={leverage} onChange={(e) => setLeverage(e.target.value)}/>
+                  <input className='w-[100px] text-center py-2 text-[18px] font-bold rounded-[4px]' min={2} max={150} type="number" value={leverage} 
+                  onChange={(e) => setLeverage(e.target.value)} />
               </div>
               <div className='mt-4'>
                 <Slider
