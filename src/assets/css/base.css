@@ -18,3 +18,8 @@
 .css-1u9des2-indicatorSeparator {
     display: none;
 }
+
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}

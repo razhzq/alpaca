@@ -19,9 +19,6 @@ const select2 = [
   { value: "short", label: "Short" },
 ];
 
-const handleChange = ()=> {
-
-}
 
 const LeverageLayout = ({ title }) => {
   const [ calStatus, setCalStatus ] = useState(false);
@@ -31,8 +28,8 @@ const LeverageLayout = ({ title }) => {
     setCalStatus(true);
   }
 
-  const handleChange = (value) => {
-    const validValues = [2, 25, 50, 75, 100];
+  const handleLeverageChange = (value) => {
+    const validValues = [2, 25, 50, 75, 100, 125, 150];
     const closestValue = validValues.reduce((a, b) => {
       return Math.abs(b - value) < Math.abs(a - value) ? b : a;
     });
@@ -50,14 +47,14 @@ const LeverageLayout = ({ title }) => {
           <div className="flex flex-col  gap-5 h-full">
             <p className="text-md text-black font-mainRegular"></p>
             <div className="w-full grid grid-cols-1 sm:grid-cols-[120px,auto] gap-6 items-center">
-              <input type="text" defaultValue="100" onChange={handleChange} placeholder="0" className="bg-transparent outline-none text-[46px] md:text-[68px] text-blue font-mainBold"/>
+              <input type="text" defaultValue="100" placeholder="0" className="bg-transparent outline-none text-[46px] md:text-[68px] text-blue font-mainBold"/>
               <CustomSelect options={select2} />
             </div>
 
             <div className='p-2'>
               <div className='flex justify-between items-center'>
                 <p className='text-[18px] font-bold'>Leverage <span className='text-[18px] font-normal'>(2x~150x)</span></p>
-                <input className='w-[100px] text-center py-2 text-[18px] font-bold rounded-[4px]' min={2} type="number" value={leverage} onChange={(e) => setLeverage(e.target.value)}/>
+                  <input className='w-[100px] text-center py-2 text-[18px] font-bold rounded-[4px]' min={2} max={150} type="number" value={leverage} onChange={(e) => setLeverage(e.target.value)}/>
               </div>
               <div className='mt-4'>
                 <Slider
@@ -66,11 +63,11 @@ const LeverageLayout = ({ title }) => {
                   graduated
                   progress
                   value={leverage}
-                  onChange={handleChange}
+                  onChange={handleLeverageChange}
                   min={2}
-                  max={102}
+                  max={152}
                   renderMark={mark => {
-                    if ([2, 27, 52, 77, 102].includes(mark)) {
+                    if ([2, 27, 52, 77, 102, 127, 152].includes(mark)) {
                       return <span>{ mark == 2 ? mark : mark-2}</span>;
                     }
                     return null;
