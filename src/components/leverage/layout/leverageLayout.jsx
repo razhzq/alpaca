@@ -36,10 +36,10 @@ function LeverageLayout({ title }) {
               <CustomSelect options={select2} />
             </div>
             <div className="w-full flex flex-col gap-2">
-              <button className="w-full py-1 bg-blue rounded-[6px] text-sm sm:text-base md:text-md text-white font-mainSemibold">
+              <button className="w-full py-2 bg-blue rounded-[6px] text-sm sm:text-base md:text-md text-white font-mainSemibold">
                 Calculate
               </button>
-              <button className="w-full py-1 bg-blueDark rounded-[6px] text-sm sm:text-base md:text-md text-white font-mainSemibold">
+              <button className="w-full py-2 bg-blueDark rounded-[6px] text-sm sm:text-base md:text-md text-white font-mainSemibold">
                 Connect Wallet
               </button>
             </div>
