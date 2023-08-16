@@ -27,7 +27,7 @@ const customDropdownIndicator = ({ innerProps, isFocused }) => (
   </div>
 );
 
-function CustomSelect({options}) {
+function CustomSelect({options, onPairChange}) {
   return (
     <Select
       components={{
@@ -35,6 +35,7 @@ function CustomSelect({options}) {
         DropdownIndicator: customDropdownIndicator,
       }}
       options={options}
+      onChange={(e) => onPairChange(e.value)}
     />
   );
 }
