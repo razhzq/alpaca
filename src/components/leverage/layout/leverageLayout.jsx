@@ -14,12 +14,12 @@ import GMXPositionRouter from '../../../contractABI/GMSPositionRouter.json'
 import GNSTrading from '../../../contractABI/GNSTradingContract.json'
 import GNSPairABI from '../../../contractABI/GNSPrice.json'
 
-const DaiAddress = '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1'
+const DaiAddress = '0x04B2A6E51272c82932ecaB31A5Ab5aC32AE168C3'//'0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1'
 const GMXRouterAddress = '0xaBBc5F99639c9B6bCb58544ddf04EFA6802F4064'
 const GMXPositionAddress = '0xb87a436B93fFE9D75c5cFA7bAcFff96430b09868'
-const GNSTradingAddress = '0x5E5BfDA2345218c9Ee92B6d60794Dab5A4706342'
-const GNSStorageAddress = '0xcFa6ebD475d89dB04cAd5A756fff1cb2BC5bE33c'
-const GNSBTC = '0x6ce185860a4963106506C203335A2910413708e9'
+const GNSTradingAddress = '0x32530f38cB1ebC1B7389325d754B40fF53cb77f0'//'0x5E5BfDA2345218c9Ee92B6d60794Dab5A4706342'
+const GNSStorageAddress = '0x4d2dF485c608aa55A23d8d98dD2B4FA24Ba0f2Cf'//'0xcFa6ebD475d89dB04cAd5A756fff1cb2BC5bE33c'
+const GNSBTC = '0x007A22900a3B98143368Bd5906f8E17e9867581b'//'0x6ce185860a4963106506C203335A2910413708e9'
 const GNSETH = '0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612'
 const GNSLINK = '0x86E53CF1B870786351Da77A57575e79CB55812CB'
 const GNSUNI = '0x9C917083fDb403ab5ADbEC26Ee294f6EcAda2720'
@@ -34,8 +34,8 @@ const select1 = [
   { value: "UNI/USD", label: "UNI/USD" },
 ];
 const select2 = [
-  { value: "long", label: "Long" },
-  { value: "short", label: "Short" },
+  { value: true, label: "Long" },
+  { value: false, label: "Short" },
 ];
 
 
@@ -47,6 +47,7 @@ const LeverageLayout = ({ title }) => {
   const [gmxPrice, setGmxPrice] = useState();
   const [gnsPrice, setGnsPrice] = useState('');
   const [orderType, setOrderType] = useState('')
+  const [isLong, setIsLong] = useState(true)
   const [daiContract, setDaiContract] = useState({});
   const [gmxRouterContract, setGMXRouterContract] = useState({});
   const [gmxPositionRouterContract, setGmxPosContract] = useState({});
@@ -57,6 +58,8 @@ const LeverageLayout = ({ title }) => {
   const [gnsUNI, setGnsUNI] = useState({})
   const [gmxBest, setGmxBest] = useState(false);
   const [priceDiffPercent, setPriceDiffPercent] = useState();
+  const [collateral, setCollateral] = useState()
+  const [pairIndex, setPairIndex] = useState()
 
   const onCalculate = () => {
     setCalStatus(true);
@@ -70,34 +73,56 @@ const LeverageLayout = ({ title }) => {
     setLeverage(closestValue);
   };
 
-  const comparePrice = (gns, gmx) => {
-    if(gns > gmx) {
-       setGmxBest(false);
-       const difference = (gmx - gns) / gmx * 100
+  const comparePrice = (gns, gmx, isLong) => {
+    let difference;
+    let gmxConv = gmx / 10 ** 30;
+    console.log(`orderss`, isLong)
+    if(isLong === false) {
+      if(gns > gmxConv) {
+        setGmxBest(false);
+        difference = (gmxConv - gns) / gmxConv * 100
+        setPriceDiffPercent(difference)
+        console.log(difference)
+     } else {
+       setGmxBest(true);
+       difference = (gns - gmxConv) / gmxConv * 100
        setPriceDiffPercent(difference)
        console.log(difference)
-    } else {
-      setGmxBest(true);
-      const difference = (gns - gmx) / gmx * 100
-      setPriceDiffPercent(difference)
-      console.log(difference)
+     }
+    } else if (isLong === true) {
+       if(gns < gmxConv) {
+        setGmxBest(false);
+        difference = (gmxConv - gns) / gmxConv * 100
+        setPriceDiffPercent(difference)
+        console.log(difference)
+       } else {
+        setGmxBest(true);
+        difference = (gns - gmxConv) / gmxConv * 100
+        setPriceDiffPercent(difference)
+        console.log(difference)
+       }
     }
+    
+    console.log('difference =>', difference)
   }
 
 
  
 
-  const connectWallet = async () => {
+  const connectWallet = async (e) => {
+       e.preventDefault()
        if (window.ethereum) {
           await window.ethereum.request({method: "eth_requestAccounts"})
           window.web3 = new Web3(window.ethereum);
 
-          await window.ethereum.enable()
+          // await window.ethereum.enable()
           
-          const account = await web3.eth.getAccounts([0]);
+          const account = await  web3.eth.getAccounts();
+          console.log('account', account)
+          const walletAddress = account[0];
 
           console.log(gnsBTC)
-          setAddress(account)
+          setAddress(walletAddress)
           console.log(account)
        } else {
         console.log('no wallet')
@@ -144,22 +169,26 @@ const LeverageLayout = ({ title }) => {
               price = await gnsBTC.methods.latestAnswer().call()
               convPrice = BigInt(price) / BigInt(10 ** 8)
               setGnsPrice(convPrice.toString())
+              setPairIndex(0)
               break;
             case 'ETH/USD':
               price = await gnsETH.methods.latestAnswer().call()
               convPrice = BigInt(price) / BigInt(10 ** 8)
               setGnsPrice(convPrice.toString())
+              setPairIndex(1)
               
               break;
             case 'LINK/USD':
               price = await gnsLINK.methods.latestAnswer().call()
               convPrice = BigInt(price) / BigInt(10 ** 8)
               setGnsPrice(convPrice.toString())
+              setPairIndex(2)
               break;
             case 'UNI/USD':
               price = await gnsUNI.methods.latestAnswer().call()
               convPrice = BigInt(price) / BigInt(10 ** 8)
               setGnsPrice(convPrice.toString())
+              setPairIndex(17)
               break;
             default:
                setGnsPrice(0)
@@ -173,11 +202,26 @@ const LeverageLayout = ({ title }) => {
        }
   }
 
+  const loadWeb3 = async() => {
+    if (window.ethereum) {
+        window.web3 = new Web3(window.ethereum)
+        await window.ethereum.enable()
+      }
+      else if (window.web3) {
+        window.web3 = new Web3(window.web3.currentProvider)
+      }
+      else if (window.innerWidth > 720 && !window.web3) {
+        window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
+      }
+}
+
+
   
 
   const loadContract = async () => {
     
-    window.web3 = new Web3(window.web3.currentProvider)
+    // window.web3 = new Web3(window.web3.currentProvider)
+    const web3 = window.web3;
     
     const dai = new web3.eth.Contract(Dai, DaiAddress);
     setDaiContract(dai);
@@ -200,15 +244,59 @@ const LeverageLayout = ({ title }) => {
     console.log('gnsbtc:', gnsBTC)
   }
 
+  const openTradeGNS = async () => {
+
+     let collateralConv = collateral * 10 ** 18
+     let gnsOpenWithSlippage = gnsPrice * 1.0005;
+     let gnsOpenPrice = (gnsOpenWithSlippage * 10 ** 10)
+     console.log('collateral conversion:', collateralConv)
+     console.log('open price gns:', gnsOpenPrice)
+     console.log('collateral:', Number.isInteger(collateralConv))
+     console.log('openpriceint:', Number.isInteger(gnsOpenPrice))
+     const tp = gnsPrice + (0.01 * gnsPrice * (15 / leverage));
+     const tpConv = tp * 10 ** 10;
+     let tradeTuple = {
+      'trader': address,
+      'pairIndex': pairIndex,
+      'index': 0,  //tradeIndex
+      'initialPosToken': 0,
+      'positionSizeDai': BigInt(collateralConv),  // collateral in 1e18
+      'openPrice': BigInt(gnsOpenPrice),
+      'buy': isLong,
+      'leverage': leverage,  //leverage adjustable by slider on frontend
+      'tp': BigInt(tpConv),
+      'sl': 0
+     }
+
+     console.log(`tradettuple `, tradeTuple)
+     try{
+      await daiContract.methods.approve(GNSStorageAddress, BigInt(collateralConv)).send({from: address, gasLimit: '5000000', transactionBlockTimeout: 200})
+      .on('transactionHash', (hash) => {
+         gnsTradingContract.methods.openTrade(
+           tradeTuple,
+           0,
+           0,
+           '12492725505',
+           '0x0000000000000000000000000000000000000000'
+         ).send({from: address, gasLimit: '5000000', transactionBlockTimeout: 200})
+      })
+
+     } catch (error) {
+         console.log(error)
+     }
+
+    
+  }
+
   const handleCalculate = async () => {
      onCalculate();
      getGMXPrice(asset);
      getGNSPrice(asset);
-     comparePrice(gnsPrice, gmxPrice);
+     comparePrice(gnsPrice, gmxPrice, isLong);
   }
 
   useEffect(() => {
-    
+    loadWeb3()
     loadContract()
   }, [])
 
@@ -223,8 +311,8 @@ const LeverageLayout = ({ title }) => {
           <div className="flex flex-col  gap-5 h-full">
             <p className="text-md text-black font-mainRegular"></p>
             <div className="w-full grid grid-cols-1 sm:grid-cols-[120px,auto] gap-6 items-center">
-              <input type="text" defaultValue="100" placeholder="0" className="bg-transparent outline-none text-[46px] md:text-[68px] text-blue font-mainBold"/>
-              <CustomSelect onPairChange={setOrderType} options={select2} />
+              <input type="number" defaultValue="0" placeholder="0" className="bg-transparent outline-none text-[46px] md:text-[68px] text-blue font-mainBold" onChange={(e) => setCollateral(e.target.value)}/>
+              <CustomSelect onPairChange={setIsLong} options={select2} />
             </div>
 
             <div className='p-2'>
@@ -257,7 +345,7 @@ const LeverageLayout = ({ title }) => {
               <button onClick={handleCalculate} className="w-full py-2 bg-blue rounded-[6px] text-sm sm:text-base md:text-md text-white font-mainSemibold">
                 Calculate
               </button>
-              <button onClick={connectWallet} className="w-full py-2 bg-blueDark rounded-[6px] text-sm sm:text-base md:text-md text-white font-mainSemibold">
+              <button onClick={(e) => connectWallet(e)} className="w-full py-2 bg-blueDark rounded-[6px] text-sm sm:text-base md:text-md text-white font-mainSemibold">
                 {address
                    ? <div>{address}</div>
                    : <div>Connect Wallet</div>
@@ -294,7 +382,7 @@ const LeverageLayout = ({ title }) => {
                 </p>
               </div>
             </div>
-            <div className={`${calStatus ? 'flex': 'hidden'} group hover:bg-blueDark bg-white w-full items-center justify-between px-4 py-1 rounded-[6px] transition-all`}>
+            <div onClick={() => {openTradeGNS()}} className={`${calStatus ? 'flex': 'hidden'} group hover:bg-blueDark bg-white w-full items-center justify-between px-4 py-1 rounded-[6px] transition-all`}>
               <div className="flex flex-col gap-1">
                 <p className="group-hover:text-white transition-all text-black text-sm sm:text-base font-mainRegular">
                   {gnsPrice}
