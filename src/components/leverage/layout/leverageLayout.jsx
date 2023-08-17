@@ -109,8 +109,8 @@ const LeverageLayout = ({ title }) => {
 
  
 
-  const connectWallet = async (e) => {
-       e.preventDefault()
+  const connectWallet = async () => {
+      
        if (window.ethereum) {
           await window.ethereum.request({method: "eth_requestAccounts"})
           window.web3 = new Web3(window.ethereum);
@@ -152,8 +152,8 @@ const LeverageLayout = ({ title }) => {
         default:
           setGmxPrice(0)
       }
-      console.log(gmxPrice)
-      return gmxPrice
+      // console.log(gmxPrice)
+      // return gmxPrice
     } catch (error) {
       console.log(error);
     }
@@ -194,8 +194,8 @@ const LeverageLayout = ({ title }) => {
             default:
                setGnsPrice(0)
           }
-          console.log('gg',gnsPrice)
-          return gnsPrice;
+          // console.log('gg',gnsPrice)
+          // return gnsPrice;
 
 
        } catch (error) {
@@ -241,8 +241,8 @@ const LeverageLayout = ({ title }) => {
     setGnsLINK(link)
     const uni = new web3.eth.Contract(GNSPairABI, GNSUNI)
     setGnsUNI(uni)
-    console.log(daiContract)
-    console.log('gnsbtc:', gnsBTC)
+    // console.log(daiContract)
+    // console.log('gnsbtc:', gnsBTC)
   }
 
   const openTradeGNS = async () => {
@@ -250,10 +250,10 @@ const LeverageLayout = ({ title }) => {
      let collateralConv = collateral * 10 ** 18
      let gnsOpenWithSlippage = Math.floor(gnsPrice * 1.0005 + 0.5);
      let gnsOpenPrice = (gnsOpenWithSlippage * 10 ** 10)
-     console.log('collateral conversion:', collateralConv)
-     console.log('open price gns:', gnsOpenPrice)
-     console.log('collateral:', Number.isInteger(collateralConv))
-     console.log('openpriceint:', Number.isInteger(gnsOpenPrice))
+    //  console.log('collateral conversion:', collateralConv)
+    //  console.log('open price gns:', gnsOpenPrice)
+    //  console.log('collateral:', Number.isInteger(collateralConv))
+    //  console.log('openpriceint:', Number.isInteger(gnsOpenPrice))
      const tp = gnsPrice + (0.01 * gnsPrice * (15 / leverage));
      const tpConv = tp * 10 ** 10;
      let tradeTuple = {
@@ -269,7 +269,7 @@ const LeverageLayout = ({ title }) => {
       'sl': 0
      }
 
-     console.log(`tradettuple `, tradeTuple)
+    //  console.log(`tradettuple `, tradeTuple)
      try{
       await daiContract.methods.approve(GNSStorageAddress, BigInt(collateralConv)).send({from: address, gasLimit: '5000000', transactionBlockTimeout: 200})
       .on('transactionHash', (hash) => {
@@ -348,7 +348,7 @@ const LeverageLayout = ({ title }) => {
               <button onClick={handleCalculate} className="w-full py-2 bg-blue rounded-[6px] text-sm sm:text-base md:text-md text-white font-mainSemibold">
                 Calculate
               </button>
-              <button onClick={(e) => connectWallet(e)} className="w-full py-2 bg-blueDark rounded-[6px] text-sm sm:text-base md:text-md text-white font-mainSemibold">
+              <button onClick={() => connectWallet()} className="w-full py-2 bg-blueDark rounded-[6px] text-sm sm:text-base md:text-md text-white font-mainSemibold">
                 {address
                    ? <div>{address}</div>
                    : <div>Connect Wallet</div>
