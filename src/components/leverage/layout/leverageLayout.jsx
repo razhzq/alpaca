@@ -44,7 +44,7 @@ const LeverageLayout = ({ title }) => {
   const [ leverage, setLeverage ] = useState(2);
   const [address, setAddress] = useState('');
   const [asset, setAsset] = useState('');
-  const [gmxPrice, setGmxPrice] = useState();
+  const [gmxPrice, setGmxPrice] = useState(0);
   const [gnsPrice, setGnsPrice] = useState('');
   const [orderType, setOrderType] = useState('')
   const [isLong, setIsLong] = useState(true)
