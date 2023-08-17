@@ -117,12 +117,13 @@ const LeverageLayout = ({ title }) => {
 
           // await window.ethereum.enable()
           
-          const account = await  web3.eth.getAccounts();
+          const account = await  web3.eth.getAccounts()
           console.log('account', account)
           const walletAddress = account[0];
 
           console.log(gnsBTC)
           setAddress(walletAddress)
+          // loadContract()
           console.log(account)
        } else {
         console.log('no wallet')
@@ -247,7 +248,7 @@ const LeverageLayout = ({ title }) => {
   const openTradeGNS = async () => {
 
      let collateralConv = collateral * 10 ** 18
-     let gnsOpenWithSlippage = gnsPrice * 1.0005;
+     let gnsOpenWithSlippage = Math.floor(gnsPrice * 1.0005 + 0.5);
      let gnsOpenPrice = (gnsOpenWithSlippage * 10 ** 10)
      console.log('collateral conversion:', collateralConv)
      console.log('open price gns:', gnsOpenPrice)
@@ -296,9 +297,11 @@ const LeverageLayout = ({ title }) => {
   }
 
   useEffect(() => {
-    loadWeb3()
-    loadContract()
-  }, [])
+     if(address) {
+       loadContract()
+     }
+    // loadContract()
+  }, [address])
 
   return (
     <div className="container-main w-full flex flex-col gap-8 py-10">
