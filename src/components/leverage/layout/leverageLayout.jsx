@@ -17,9 +17,9 @@ import GNSPairABI from '../../../contractABI/GNSPrice.json'
 const DaiAddress = '0x04B2A6E51272c82932ecaB31A5Ab5aC32AE168C3'//'0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1'
 const GMXRouterAddress = '0xaBBc5F99639c9B6bCb58544ddf04EFA6802F4064'
 const GMXPositionAddress = '0xb87a436B93fFE9D75c5cFA7bAcFff96430b09868'
-const GNSTradingAddress = '0x32530f38cB1ebC1B7389325d754B40fF53cb77f0'//'0x5E5BfDA2345218c9Ee92B6d60794Dab5A4706342'
-const GNSStorageAddress = '0x4d2dF485c608aa55A23d8d98dD2B4FA24Ba0f2Cf'//'0xcFa6ebD475d89dB04cAd5A756fff1cb2BC5bE33c'
-const GNSBTC = '0x007A22900a3B98143368Bd5906f8E17e9867581b'//'0x6ce185860a4963106506C203335A2910413708e9'
+const GNSTradingAddress = '0x5E5BfDA2345218c9Ee92B6d60794Dab5A4706342'//'0x5E5BfDA2345218c9Ee92B6d60794Dab5A4706342'
+const GNSStorageAddress = '0xcFa6ebD475d89dB04cAd5A756fff1cb2BC5bE33c'//'0xcFa6ebD475d89dB04cAd5A756fff1cb2BC5bE33c'
+const GNSBTC = '0x6ce185860a4963106506C203335A2910413708e9'//'0x6ce185860a4963106506C203335A2910413708e9'
 const GNSETH = '0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612'
 const GNSLINK = '0x86E53CF1B870786351Da77A57575e79CB55812CB'
 const GNSUNI = '0x9C917083fDb403ab5ADbEC26Ee294f6EcAda2720'
@@ -60,6 +60,7 @@ const LeverageLayout = ({ title }) => {
   const [priceDiffPercent, setPriceDiffPercent] = useState();
   const [collateral, setCollateral] = useState()
   const [pairIndex, setPairIndex] = useState()
+  const [pairGMXAddress, setPairGMXAddress] = useState('')
 
   const onCalculate = () => {
     setCalStatus(true);
@@ -123,6 +124,31 @@ const LeverageLayout = ({ title }) => {
 
           console.log(gnsBTC)
           setAddress(walletAddress)
+          if(window.ethereum.networkVersion !== 42161) {
+               try {
+
+                await window.ethereum.request({
+                  method: 'wallet_switchEthereumChain',
+                  params: [{ chainId: Web3.utils.toHex(42161)}]
+                });
+
+               } catch (err) {
+                   if(err.code === 4902) {
+                     await window.ethereum.request({
+                        method: 'wallet_addEthereumChain',
+                        params: [
+                          {
+                            chainName: 'Arbitrum One',
+                            chainId: Web3.utils.toHex(42161),
+                            nativeCurrency: { name: 'ETH', decimals: 18, symbol: 'MATIC'},
+                            rpcUrls: ['https://rpc.arb1.arbitrum.gateway.fm']
+                          }
+                        ]
+                     })
+
+                   }
+               }
+          }
           // loadContract()
           console.log(account)
        } else {
@@ -139,15 +165,19 @@ const LeverageLayout = ({ title }) => {
       switch (asset) {
         case "BTC/USD":
           setGmxPrice(price.data['0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f']);
+          setPairGMXAddress('0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f')
           break;
         case 'ETH/USD':
           setGmxPrice(price.data['0x82aF49447D8a07e3bd95BD0d56f35241523fBab1']);
+          setPairGMXAddress('0x82aF49447D8a07e3bd95BD0d56f35241523fBab1')
           break;
         case 'LINK/USD':
           setGmxPrice(price.data['0xf97f4df75117a78c1A5a0DBb814Af92458539FB4']);
+          setPairGMXAddress('0xf97f4df75117a78c1A5a0DBb814Af92458539FB4')
           break;
         case 'UNI/USD':
            setGmxPrice(price.data['0xFa7F8980b0f1E64A2062791cc3b0871572f1F7f0']);
+           setPairGMXAddress('0xFa7F8980b0f1E64A2062791cc3b0871572f1F7f0')
           break;
         default:
           setGmxPrice(0)
@@ -245,6 +275,55 @@ const LeverageLayout = ({ title }) => {
     // console.log('gnsbtc:', gnsBTC)
   }
 
+  const openTradeGMX = async () => {
+     let collateralConv = collateral * 10 ** 18
+     let gmxConv = gmxPrice / 10 ** 30;
+     let slippage = gmxConv * 1.5 / 100;
+
+     let acceptablePrice = 0;
+
+     if(isLong == true) {
+        acceptablePrice = gmxConv + slippage;
+     } else {
+        acceptablePrice = gmxConv - slippage;
+     }
+
+     const contractPrice = acceptablePrice * 10 ** 30;
+   
+     const sizeDelta = (collateral * leverage) * (10 ** 30)
+
+     try{
+        await daiContract.methods.approve(
+          GMXPositionAddress,
+          BigInt(collateralConv)
+        ).send({ from: address, gasLimit: '5000000', transactionBlockTimeout: 200 })
+         .on('transactionHash', (hash) => {
+             gmxRouterContract.methods.approvePlugin(
+                GMXPositionAddress
+             ).send({from: address, gasLimit: '5000000', transactionBlockTimeout: 200}).on('transactionHash', (hash) => {
+                 gmxPositionRouterContract.methods.createIncreasePosition(
+                    [DaiAddress],
+                    pairGMXAddress,
+                    BigInt(collateralConv),
+                    0,
+                    BigInt(sizeDelta),
+                    isLong,
+                    BigInt(contractPrice),
+                    BigInt(180000000000000),
+                    '0x0000000000000000000000000000000000000000000000000000000000000000',
+                    '0x0000000000000000000000000000000000000000'
+                 ).send({ from: address, gasLimit: '5000000', transactionBlockTimeout: 200})
+             })
+         })
+
+
+
+     } catch (error) {
+        console.log(error)
+     }
+
+  }
+
   const openTradeGNS = async () => {
 
      let collateralConv = collateral * 10 ** 18
@@ -281,7 +360,6 @@ const LeverageLayout = ({ title }) => {
            '0x0000000000000000000000000000000000000000'
          ).send({from: address, gasLimit: '5000000', transactionBlockTimeout: 200})
       })
-
      } catch (error) {
          console.log(error)
      }
@@ -363,7 +441,7 @@ const LeverageLayout = ({ title }) => {
           subTitle="Best route is selected based on net output after the gas fees."
         >
           <div className="w-full flex flex-col gap-[16px]">
-            <div className={`${calStatus ? 'flex': 'hidden'} group hover:bg-blueDark bg-white w-full items-center justify-between px-4 py-1 rounded-[6px] transition-all`}>
+            <div onClick={() => openTradeGMX()} className={`${calStatus ? 'flex': 'hidden'} group hover:bg-blueDark bg-white w-full items-center justify-between px-4 py-1 rounded-[6px] transition-all`}>
               <div className="flex flex-col gap-1">
                 <p className="group-hover:text-white transition-all text-black text-sm sm:text-base font-mainRegular">
                   {(gmxPrice / 10 ** 30)}
