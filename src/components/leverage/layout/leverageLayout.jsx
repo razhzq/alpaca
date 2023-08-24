@@ -43,7 +43,7 @@ const LeverageLayout = ({ title }) => {
   const [ calStatus, setCalStatus ] = useState(false);
   const [ leverage, setLeverage ] = useState(2);
   const [address, setAddress] = useState('');
-  const [asset, setAsset] = useState('');
+  const [asset, setAsset] = useState({ value: "BTC/USD", label: "BTC/USD" });
   const [gmxPrice, setGmxPrice] = useState(0);
   const [gnsPrice, setGnsPrice] = useState('');
   const [orderType, setOrderType] = useState('')
@@ -61,6 +61,9 @@ const LeverageLayout = ({ title }) => {
   const [collateral, setCollateral] = useState()
   const [pairIndex, setPairIndex] = useState()
   const [pairGMXAddress, setPairGMXAddress] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadStatus, setLoadStatus] = useState(false);
+  const [contractLoaded, setContractLoaded] = useState(false);
 
   const onCalculate = () => {
     setCalStatus(true);
@@ -77,7 +80,7 @@ const LeverageLayout = ({ title }) => {
   const comparePrice = (gns, gmx, isLong) => {
     let difference;
     let gmxConv = gmx / 10 ** 30;
-    console.log(`orderss`, isLong)
+  
     if(isLong === false) {
       if(gns > gmxConv) {
         setGmxBest(false);
@@ -103,7 +106,7 @@ const LeverageLayout = ({ title }) => {
         console.log(difference)
        }
     }
-    
+    setIsLoading(false)
     console.log('difference =>', difference)
   }
 
@@ -140,7 +143,7 @@ const LeverageLayout = ({ title }) => {
                           {
                             chainName: 'Arbitrum One',
                             chainId: Web3.utils.toHex(42161),
-                            nativeCurrency: { name: 'ETH', decimals: 18, symbol: 'MATIC'},
+                            nativeCurrency: { name: 'ETH', decimals: 18, symbol: 'ETH'},
                             rpcUrls: ['https://rpc.arb1.arbitrum.gateway.fm']
                           }
                         ]
@@ -162,7 +165,7 @@ const LeverageLayout = ({ title }) => {
     try {
       const price = await axios.get('https://api.gmx.io/prices');
   
-      switch (asset) {
+      switch (asset.value) {
         case "BTC/USD":
           setGmxPrice(price.data['0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f']);
           setPairGMXAddress('0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f')
@@ -195,7 +198,7 @@ const LeverageLayout = ({ title }) => {
     let priceBig;
     let convPrice;
        try {
-          switch(asset) {
+          switch(asset.value) {
             case "BTC/USD":
               price = await gnsBTC.methods.latestAnswer().call()
               convPrice = BigInt(price) / BigInt(10 ** 8)
@@ -273,6 +276,7 @@ const LeverageLayout = ({ title }) => {
     setGnsUNI(uni)
     // console.log(daiContract)
     // console.log('gnsbtc:', gnsBTC)
+    setContractLoaded(true);
   }
 
   const openTradeGMX = async () => {
@@ -369,10 +373,18 @@ const LeverageLayout = ({ title }) => {
 
   const handleCalculate = async () => {
      onCalculate();
-     getGMXPrice(asset);
-     getGNSPrice(asset);
-     comparePrice(gnsPrice, gmxPrice, isLong);
+    //  await getGMXPrice(asset);
+    //  await getGNSPrice(asset);
+     await comparePrice(gnsPrice, gmxPrice, isLong);
+
   }
+
+  useEffect(() => {
+    if(asset && address && contractLoaded) {
+       getGMXPrice(asset)
+       getGNSPrice(asset)
+    }
+  }, [asset, address, contractLoaded])
 
   useEffect(() => {
      if(address) {
@@ -388,12 +400,13 @@ const LeverageLayout = ({ title }) => {
       </div>
       <div className="w-full grid md:grid-cols-2 gap-8">
         <LeverageBox title="Asset Pair">
-          <CustomSelect onPairChange={setAsset} options={select1} />
+          
+          <CustomSelect onPairChange={setAsset} options={select1} asset={asset} />
           <div className="flex flex-col  gap-5 h-full">
             <p className="text-md text-black font-mainRegular"></p>
             <div className="w-full grid grid-cols-1 sm:grid-cols-[120px,auto] gap-6 items-center">
               <input type="number" defaultValue="0" placeholder="0" className="bg-transparent outline-none text-[46px] md:text-[68px] text-blue font-mainBold" onChange={(e) => setCollateral(e.target.value)}/>
-              <CustomSelect onPairChange={setIsLong} options={select2} />
+              <CustomSelect onPairChange={setIsLong} options={select2} asset={isLong} />
             </div>
 
             <div className='p-2'>
@@ -431,7 +444,6 @@ const LeverageLayout = ({ title }) => {
                    ? <div>{address}</div>
                    : <div>Connect Wallet</div>
                 }
-                
               </button>
             </div>
           </div>
