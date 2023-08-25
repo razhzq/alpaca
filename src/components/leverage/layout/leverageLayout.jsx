@@ -17,9 +17,9 @@ import GNSPairABI from '../../../contractABI/GNSPrice.json'
 const DaiAddress = '0x04B2A6E51272c82932ecaB31A5Ab5aC32AE168C3'//'0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1'
 const GMXRouterAddress = '0xaBBc5F99639c9B6bCb58544ddf04EFA6802F4064'
 const GMXPositionAddress = '0xb87a436B93fFE9D75c5cFA7bAcFff96430b09868'
-const GNSTradingAddress = '0x5E5BfDA2345218c9Ee92B6d60794Dab5A4706342'//'0x5E5BfDA2345218c9Ee92B6d60794Dab5A4706342'
-const GNSStorageAddress = '0xcFa6ebD475d89dB04cAd5A756fff1cb2BC5bE33c'//'0xcFa6ebD475d89dB04cAd5A756fff1cb2BC5bE33c'
-const GNSBTC = '0x6ce185860a4963106506C203335A2910413708e9'//'0x6ce185860a4963106506C203335A2910413708e9'
+const GNSTradingAddress = '0x32530f38cB1ebC1B7389325d754B40fF53cb77f0'//'0x5E5BfDA2345218c9Ee92B6d60794Dab5A4706342'
+const GNSStorageAddress = '0x4d2dF485c608aa55A23d8d98dD2B4FA24Ba0f2Cf'//'0xcFa6ebD475d89dB04cAd5A756fff1cb2BC5bE33c'
+const GNSBTC = '0x007A22900a3B98143368Bd5906f8E17e9867581b'//'0x6ce185860a4963106506C203335A2910413708e9'
 const GNSETH = '0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612'
 const GNSLINK = '0x86E53CF1B870786351Da77A57575e79CB55812CB'
 const GNSUNI = '0x9C917083fDb403ab5ADbEC26Ee294f6EcAda2720'
@@ -127,12 +127,12 @@ const LeverageLayout = ({ title }) => {
 
           console.log(gnsBTC)
           setAddress(walletAddress)
-          if(window.ethereum.networkVersion !== 42161) {
+          if(window.ethereum.networkVersion !== 80001) {
                try {
 
                 await window.ethereum.request({
                   method: 'wallet_switchEthereumChain',
-                  params: [{ chainId: Web3.utils.toHex(42161)}]
+                  params: [{ chainId: Web3.utils.toHex(80001)}]
                 });
 
                } catch (err) {
@@ -141,10 +141,10 @@ const LeverageLayout = ({ title }) => {
                         method: 'wallet_addEthereumChain',
                         params: [
                           {
-                            chainName: 'Arbitrum One',
-                            chainId: Web3.utils.toHex(42161),
-                            nativeCurrency: { name: 'ETH', decimals: 18, symbol: 'ETH'},
-                            rpcUrls: ['https://rpc.arb1.arbitrum.gateway.fm']
+                            chainName: 'Polygon Mumbai',
+                            chainId: Web3.utils.toHex(80001),
+                            nativeCurrency: { name: 'MATIC', decimals: 18, symbol: 'MATIC'},
+                            rpcUrls: ['https://polygon-mumbai-bor.publicnode.com	']
                           }
                         ]
                      })
