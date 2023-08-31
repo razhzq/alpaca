@@ -1,25 +1,57 @@
-@import './fonts.css';
-@import './tailwind.css';
-
+@import "./fonts.css";
+@import "./tailwind.css";
 
 .container-main {
-    width: 100%;
-    max-width: 1100px;
-    padding-left: 15px;
-    padding-right: 15px;
-    margin: 0 auto;
+  width: 100%;
+  max-width: 1100px;
+  padding-left: 15px;
+  padding-right: 15px;
+  margin: 0 auto;
 }
-@media screen and (min-width: theme('screens.sm')) {
-    .container-main {
-        padding-left: 30px;
-        padding-right: 30px;
-    }
+
+@media screen and (min-width: theme("screens.sm")) {
+  .container-main {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
 }
+
 .css-1u9des2-indicatorSeparator {
-    display: none;
+  display: none;
 }
 
 input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+:root {
+  --ap-white: #ffffff;
+  --ap-blue: #381cb8;
+  --ap-blueLight: #e9edf0;
+  --ap-blueDark: #2d00ff;
+  --ap-black: #181b20;
+  --ap-gray: #c6c6c6;
+  --ap-grayDark: #989898;
+  --ap-error: #e2000f;
+  --ap-success: #04c600;
+  --ap-buttonText: var(--ap-white);
+  --ap-routeBackground: var(--ap-white);
+  --ap-routeTextHover: var(--ap-white);
+}
+
+.dark {
+  --ap-white: #181b20;
+  --ap-blue: #2d42fc;
+  --ap-blueLight: #0d1117;
+  --ap-background: #16182e;
+  --ap-blueDark: #2d42fc;
+  --ap-black: #ffffff;
+  --ap-gray: #aaaaaa;
+  --ap-grayDark: #acacac;
+  --ap-error: #ff3b30;
+  --ap-success: #00d160;
+  --ap-buttonText: #ffffff;
+  --ap-routeBackground: #20253f;
+  --ap-routeTextHover: #ffffff;
 }
